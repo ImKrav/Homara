@@ -1,13 +1,29 @@
 # Homara
 
 ## Concepto
+
 - Se trata de un E-Commerce de productos para el hogar y ferretería (como herramientas, artículos de construcción, muebles, materiales, entre otros). El proyecto nace de la necesidad de mitigar los errores de cálculo en la compra de materiales de construcción y remodelación, un problema frecuente que genera sobrecostos o retrasos. Homara no solo vende productos, sino que asiste al cliente mediante la creación de "Proyectos", calculando automáticamente las cantidades necesarias (ej. baldosas por metro cuadrado, cantidad de pegante) y sugiriendo artículos complementarios, unificando la planificación y la compra en una sola plataforma.
 
 ## Objetivo
+
 - Se persigue reducir en un 30% los errores de compra por cálculos de material incorrectos, aumentar el ticket promedio de venta mediante el sistema de sugerencias cruzadas ("Cross-selling" basado en proyectos) y consolidar una arquitectura de software altamente disponible que soporte picos de tráfico sin comprometer la integridad transaccional del inventario. El alcance esperado se limitará a la implementación del catálogo, el carrito de compras, el motor de cálculo para proyectos de recubrimiento (pisos/paredes) y la pasarela de pago simulada.
 
 ## Funcionalidades
+
 - Módulo de Proyectos y Cálculo de Materiales
 - Módulo de Catálogo y Búsqueda
 - Módulo de Carrito y Transacciones
 - Módulo de Inventario y Administración
+
+## Tecnologías
+
+### Frontend
+
+- **Framework:** [Next.js](https://nextjs.org/) (v16.2.3)
+- **Interfaz:** [React](https://react.dev/) (v19.2.4)
+- **Lenguaje:** [TypeScript](https://www.typescriptlang.org/) (v5.x)
+- **Estilos:** [Tailwind CSS](https://tailwindcss.com/) (v4.2.2)
+
+### Backend
+
+- En discusión...
