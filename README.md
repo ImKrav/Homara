@@ -31,35 +31,19 @@
 - **Base de Datos:** [PostgreSQL](https://postgresql.org/) (v15)
 - **ORM:** [Prisma](https://www.prisma.io/) (v7.7.0)
 
-## 🚀 Instalación y Ejecución
+## Instalación y Ejecución
 
 Gestión de contenedores mediante **Docker Compose**.
 
 ### Requisitos
 
 - [Docker](https://www.docker.com/) o **Docker Desktop**.
-- [Node.js](https://nodejs.org/) v20+.
 
-### Pasos
+### Iniciar Contenedores:
 
-1. **Variables de Entorno:**
-
-   ```bash
-   cd backend && cp .env.example .env && cd ..
-   ```
-
-2. **Iniciar Contenedores:**
-
-   ```bash
-   docker compose up --build -d
-   ```
-
-3. **Migraciones y Seed (Primera vez):**
-   ```bash
-   cd backend
-   npx prisma db push
-   npm run seed
-   ```
+```bash
+docker compose up --build -d
+```
 
 ### Accesos
 
@@ -68,11 +52,3 @@ Gestión de contenedores mediante **Docker Compose**.
 - **Swagger:** [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
 
 ---
-
-### Comandos Útiles
-
-**Detener servicios conservando volúmenes:**
-
-```bash
-docker compose down
-```

@@ -19,6 +19,13 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
   console.log("🌱 Seeding Homara database...\n");
 
+  // ─── Check if already seeded ──────────────
+  const existingUsers = await prisma.user.count();
+  if (existingUsers > 0) {
+    console.log("✅ Database already contains data. Skipping seed to prevent data loss.");
+    return;
+  }
+
   // ─── Clean existing data ────────────────────
   console.log("🧹 Cleaning existing data...");
   await prisma.review.deleteMany();
