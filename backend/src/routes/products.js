@@ -8,6 +8,44 @@ import { validateBody } from "../middleware/validate.js";
 
 const router = Router();
 
+/**
+ * @openapi
+ * /api/products:
+ *   get:
+ *     tags:
+ *       - Products
+ *     summary: Listar productos
+ *     description: Recupera un listado paginado de productos. Soporta filtros por categoría, búsqueda por aproximación y diversos métodos de ordenación.
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema:
+ *           type: string
+ *         description: Slug de la categoría. Si es "todos", lo ignora.
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Término a buscar en nombre o descripción.
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *         description: 'Opciones: popular, precio-asc, precio-desc, rating'
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: 'Número de página de la paginación (defecto: 1)'
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: 'Límite de productos por página (defecto: 20)'
+ *     responses:
+ *       200:
+ *         description: Listado de productos obtenido.
+ */
 // GET /api/products — Listar con filtros, búsqueda y paginación
 router.get("/", async (req, res, next) => {
   try {
@@ -100,6 +138,26 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/products/{id}:
+ *   get:
+ *     tags:
+ *       - Products
+ *     summary: Detalle del producto
+ *     description: Presenta un detalle interactivo de un producto por su ID junto con 4 productos similares y su historial de reseñas.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Detalles devueltos integradamente.
+ *       404:
+ *         description: Producto no encontrado.
+ */
 // GET /api/products/:id — Detalle de producto con relacionados
 router.get("/:id", async (req, res, next) => {
   try {
@@ -177,6 +235,52 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/products:
+ *   post:
+ *     tags:
+ *       - Products
+ *     summary: Crear producto (admin)
+ *     description: Registra un nuevo producto en el catálogo definiendo stock, unidad e hipervínculos como tags.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - description
+ *               - price
+ *               - image
+ *               - categoryId
+ *               - unit
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               originalPrice:
+ *                 type: number
+ *               image:
+ *                 type: string
+ *               categoryId:
+ *                 type: string
+ *               unit:
+ *                 type: string
+ *               stockQuantity:
+ *                 type: integer
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       201:
+ *         description: Producto creado.
+ */
 // POST /api/products — Crear producto (admin)
 router.post(
   "/",
@@ -220,6 +324,51 @@ router.post(
   }
 );
 
+/**
+ * @openapi
+ * /api/products/{id}:
+ *   put:
+ *     tags:
+ *       - Products
+ *     summary: Actualizar producto
+ *     description: Actualiza un producto existente modificándolo diferencialmente.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               price:
+ *                 type: number
+ *               originalPrice:
+ *                 type: number
+ *               image:
+ *                 type: string
+ *               categoryId:
+ *                 type: string
+ *               unit:
+ *                 type: string
+ *               stockQuantity:
+ *                 type: integer
+ *               tags:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *     responses:
+ *       200:
+ *         description: Producto actualizado iterativamente.
+ */
 // PUT /api/products/:id — Actualizar producto (admin)
 router.put("/:id", async (req, res, next) => {
   try {
@@ -270,6 +419,24 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/products/{id}:
+ *   delete:
+ *     tags:
+ *       - Products
+ *     summary: Eliminar producto
+ *     description: Desregistra un producto del catálogo definitivamente por su UUID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Producto eliminado completamente.
+ */
 // DELETE /api/products/:id — Eliminar producto (admin)
 router.delete("/:id", async (req, res, next) => {
   try {

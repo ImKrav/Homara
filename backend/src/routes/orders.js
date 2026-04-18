@@ -23,6 +23,27 @@ async function generateOrderNumber() {
   return `ORD-${year}-${String(count + 1).padStart(3, "0")}`;
 }
 
+/**
+ * @openapi
+ * /api/orders:
+ *   get:
+ *     tags:
+ *       - Orders
+ *     summary: Listar pedidos
+ *     description: Obtiene la lista de pedidos de un usuario, o todos si el usuario es administrador y pasa el query param ?admin=true.
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: admin
+ *         schema:
+ *           type: boolean
+ *     responses:
+ *       200:
+ *         description: Lista de pedidos obtenida exitosamente.
+ */
 // GET /api/orders — Listar pedidos del usuario
 router.get("/", async (req, res, next) => {
   try {
@@ -55,6 +76,26 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/orders/{id}:
+ *   get:
+ *     tags:
+ *       - Orders
+ *     summary: Detalles de un pedido
+ *     description: Consigue la información detallada de una orden de compra por ID o por Número de Orden (ej. ORD-2024-001).
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Detalle del pedido.
+ *       404:
+ *         description: Pedido no encontrado.
+ */
 // GET /api/orders/:id — Detalle del pedido
 router.get("/:id", async (req, res, next) => {
   try {
@@ -115,6 +156,43 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/orders:
+ *   post:
+ *     tags:
+ *       - Orders
+ *     summary: Crear un pedido (Checkout)
+ *     description: Convierte los items en el carrito activo del usuario en una nueva orden de compra y la registra.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - paymentMethod
+ *             properties:
+ *               paymentMethod:
+ *                 type: string
+ *               shippingAddress:
+ *                 type: string
+ *               shippingCity:
+ *                 type: string
+ *               shippingState:
+ *                 type: string
+ *               shippingZip:
+ *                 type: string
+ *               shippingNotes:
+ *                 type: string
+ *               userId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Orden procesada y creada.
+ *       400:
+ *         description: El carrito está vacío.
+ */
 // POST /api/orders — Crear pedido desde carrito (checkout)
 router.post(
   "/",
@@ -206,6 +284,38 @@ router.post(
   }
 );
 
+/**
+ * @openapi
+ * /api/orders/{id}/status:
+ *   put:
+ *     tags:
+ *       - Orders
+ *     summary: Actualizar estado de una orden
+ *     description: Actualiza el estado de seguimiento de una orden.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - status
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [PENDIENTE, PROCESANDO, ENVIADO, ENTREGADO, CANCELADO]
+ *     responses:
+ *       200:
+ *         description: Estado modificado y guardado transaccionalmente.
+ *       400:
+ *         description: Estado inválido provisto.
+ */
 // PUT /api/orders/:id/status — Actualizar estado del pedido (admin)
 router.put("/:id/status", async (req, res, next) => {
   try {

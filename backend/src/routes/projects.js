@@ -12,6 +12,24 @@ const router = Router();
 // ID de usuario demo (sin auth por ahora)
 const DEMO_USER_ID = "demo-user-001";
 
+/**
+ * @openapi
+ * /api/projects:
+ *   get:
+ *     tags:
+ *       - Projects
+ *     summary: Listar proyectos del usuario
+ *     description: Lista todos los proyectos del usuario especificado.
+ *     parameters:
+ *       - in: query
+ *         name: userId
+ *         schema:
+ *           type: string
+ *         required: false
+ *     responses:
+ *       200:
+ *         description: Lista de proyectos obtenida.
+ */
 // GET /api/projects — Listar proyectos del usuario
 router.get("/", async (req, res, next) => {
   try {
@@ -43,6 +61,26 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/projects/{id}:
+ *   get:
+ *     tags:
+ *       - Projects
+ *     summary: Detalles de un proyecto
+ *     description: Retorna los detalles de un proyecto calculado junto a su lista de materiales.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Proyecto encontrado.
+ *       404:
+ *         description: Proyecto no encontrado.
+ */
 // GET /api/projects/:id — Detalle con materiales calculados
 router.get("/:id", async (req, res, next) => {
   try {
@@ -91,6 +129,47 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/projects:
+ *   post:
+ *     tags:
+ *       - Projects
+ *     summary: Crear un proyecto
+ *     description: Crea un nuevo proyecto y calcula automáticamente los materiales necesarios basados en el área.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - type
+ *               - area
+ *             properties:
+ *               name:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               length:
+ *                 type: number
+ *               width:
+ *                 type: number
+ *               height:
+ *                 type: number
+ *               area:
+ *                 type: number
+ *               materialType:
+ *                 type: string
+ *               tileFormat:
+ *                 type: string
+ *               userId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Proyecto creado exitosamente.
+ */
 // POST /api/projects — Crear proyecto + cálculo automático de materiales
 router.post(
   "/",
@@ -147,6 +226,49 @@ router.post(
   }
 );
 
+/**
+ * @openapi
+ * /api/projects/{id}:
+ *   put:
+ *     tags:
+ *       - Projects
+ *     summary: Actualizar proyecto
+ *     description: Actualiza información de un proyecto. Si cambian las dimensiones, recalcula los materiales automáticamente.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               type:
+ *                 type: string
+ *               length:
+ *                 type: number
+ *               width:
+ *                 type: number
+ *               height:
+ *                 type: number
+ *               area:
+ *                 type: number
+ *               materialType:
+ *                 type: string
+ *               tileFormat:
+ *                 type: string
+ *               status:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Proyecto actualizado.
+ */
 // PUT /api/projects/:id — Actualizar proyecto
 router.put("/:id", async (req, res, next) => {
   try {
@@ -199,6 +321,24 @@ router.put("/:id", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/projects/{id}:
+ *   delete:
+ *     tags:
+ *       - Projects
+ *     summary: Eliminar proyecto
+ *     description: Elimina un proyecto por ID.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Proyecto eliminado.
+ */
 // DELETE /api/projects/:id — Eliminar proyecto
 router.delete("/:id", async (req, res, next) => {
   try {

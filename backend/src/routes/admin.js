@@ -7,6 +7,18 @@ import prisma from "../config/db.js";
 
 const router = Router();
 
+/**
+ * @openapi
+ * /api/admin/metrics:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: Obtener métricas del dashboard
+ *     description: Retorna métricas generales como ventas del mes, pedidos activos, total de productos y clientes nuevos.
+ *     responses:
+ *       200:
+ *         description: Métricas obtenidas con éxito.
+ */
 // GET /api/admin/metrics — Métricas del dashboard
 router.get("/metrics", async (req, res, next) => {
   try {
@@ -99,6 +111,18 @@ router.get("/metrics", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/admin/inventory:
+ *   get:
+ *     tags:
+ *       - Admin
+ *     summary: Reporte de Inventario
+ *     description: Lista todos los productos y calcula alertas de stock bajo y sin stock.
+ *     responses:
+ *       200:
+ *         description: Reporte de inventario obtenido con éxito.
+ */
 // GET /api/admin/inventory — Inventario con alertas
 router.get("/inventory", async (req, res, next) => {
   try {

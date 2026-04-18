@@ -7,6 +7,18 @@ import prisma from "../config/db.js";
 
 const router = Router();
 
+/**
+ * @openapi
+ * /api/categories:
+ *   get:
+ *     tags:
+ *       - Categories
+ *     summary: Listar todas las categorías
+ *     description: Devuelve una lista de todas las categorías junto con la cantidad de productos por cada una.
+ *     responses:
+ *       200:
+ *         description: Lista obtenida exitosamente.
+ */
 // GET /api/categories — Listar todas las categorías con conteo de productos
 router.get("/", async (req, res, next) => {
   try {
@@ -34,6 +46,27 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/categories/{slug}:
+ *   get:
+ *     tags:
+ *       - Categories
+ *     summary: Detalle de categoría
+ *     description: Retorna toda la información de una categoría específica, junto con sus respectivos productos.
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Slug alfanumérico que identifica a la categoría.
+ *     responses:
+ *       200:
+ *         description: Categoría encontrada.
+ *       404:
+ *         description: Categoría no encontrada.
+ */
 // GET /api/categories/:slug — Detalle de una categoría por slug
 router.get("/:slug", async (req, res, next) => {
   try {

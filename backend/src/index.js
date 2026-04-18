@@ -13,7 +13,8 @@ import ordersRouter from "./routes/orders.js";
 import usersRouter from "./routes/users.js";
 import adminRouter from "./routes/admin.js";
 import { errorHandler } from "./middleware/errorHandler.js";
-
+import swaggerUi from "swagger-ui-express";
+import { specs } from "./config/swagger.js";
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -57,6 +58,9 @@ app.use("/api/cart", cartRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/admin", adminRouter);
+
+// ─── Swagger Documentation ───────────────────
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // ─── Error Handler ───────────────────────────
 

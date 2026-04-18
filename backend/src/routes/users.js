@@ -9,6 +9,26 @@ const router = Router();
 
 const DEMO_USER_ID = "demo-user-001";
 
+/**
+ * @openapi
+ * /api/users/{id}:
+ *   get:
+ *     tags:
+ *       - Users
+ *     summary: Obtener el perfil de un usuario
+ *     description: Retorna los datos de un usuario por su ID, con el conteo de sus proyectos y órdenes. Puedes usar el parámetro "me" para el usuario activo demo.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Perfil del usuario obtenido con éxito.
+ *       404:
+ *         description: Usuario no encontrado.
+ */
 // GET /api/users/:id — Perfil del usuario
 router.get("/:id", async (req, res, next) => {
   try {
@@ -53,6 +73,45 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/users/{id}:
+ *   put:
+ *     tags:
+ *       - Users
+ *     summary: Actualizar perfil de usuario
+ *     description: Modifica los campos que componen la información personal de un usuario.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               firstName:
+ *                 type: string
+ *               lastName:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *               address:
+ *                 type: string
+ *               city:
+ *                 type: string
+ *               state:
+ *                 type: string
+ *               zipCode:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Usuario actualizado.
+ */
 // PUT /api/users/:id — Actualizar perfil
 router.put("/:id", async (req, res, next) => {
   try {
