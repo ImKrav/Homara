@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const navLinks = [
   { label: "Inicio", href: "/" },
@@ -11,6 +11,31 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchCart() {
+      try {
+        // En una app real de Next.js, aquí usaríamos un contexto global o estado global (Zustand/Redux) 
+        // o SWR/React Query para no refetchear innecesariamente, pero esto sirve para la prueba
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/cart`);
+        const json = await res.json();
+        if (json.success && json.data && json.data.items) {
+          const count = json.data.items.reduce((sum: number, item: any) => sum + item.quantity, 0);
+          setCartCount(count);
+        }
+      } catch (err) {
+        console.error("Error fetching cart count", err);
+      }
+    }
+    
+    fetchCart();
+    
+    // Escuchar un evento personalizado por si otros componentes actualizan el carrito
+    const handleCartUpdate = () => fetchCart();
+    window.addEventListener("cartUpdated", handleCartUpdate);
+    return () => window.removeEventListener("cartUpdated", handleCartUpdate);
+  }, []);
 
   return (
     <nav className="glass sticky top-0 z-50">
@@ -80,9 +105,11 @@ export default function Navbar() {
                   d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"
                 />
               </svg>
-              <span className="absolute -top-0.5 -right-0.5 bg-primary text-bg-base text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
-                3
-              </span>
+              {cartCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-primary text-bg-base text-xs font-bold rounded-full px-1 min-w-[16px] h-4 flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
             </Link>
 
             {/* Account */}

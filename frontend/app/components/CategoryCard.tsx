@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { type Category } from "@/app/lib/mock-data";
+import { type Category } from "@/app/lib/utils";
 
 interface CategoryCardProps {
   category: Category;

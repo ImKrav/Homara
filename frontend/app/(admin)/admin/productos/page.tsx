@@ -1,9 +1,13 @@
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
-import { products, formatPrice } from "@/app/lib/mock-data";
+import { formatPrice } from "@/app/lib/utils";
 
-export default function AdminProductosPage() {
+export default async function AdminProductosPage() {
+  const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/products?limit=100", { cache: "no-store" });
+  const json = await res.ok ? await res.json() : { data: [] };
+  const products = json.data || [];
+
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
@@ -42,7 +46,7 @@ export default function AdminProductosPage() {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {products.map((product: any) => (
                 <tr
                   key={product.id}
                   className="border-b border-border/50 hover:bg-bg-surface-light transition-colors"

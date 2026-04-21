@@ -31,48 +31,85 @@
 - **Base de Datos:** [PostgreSQL](https://postgresql.org/) (v15)
 - **ORM:** [Prisma](https://www.prisma.io/) (v7.7.0)
 
-## 🚀 Instalación y Ejecución
+## Instalación y Ejecución
 
-Gestión de contenedores mediante **Docker Compose**.
+Puedes ejecutar el proyecto utilizando **Docker Compose** para un entorno completamente contenedorizado, o de forma **Local** si prefieres tener control directo sobre los procesos.
 
-### Requisitos
+### Requisitos Previos
 
-- [Docker](https://www.docker.com/) o **Docker Desktop**.
-- [Node.js](https://nodejs.org/) v20+.
-
-### Pasos
-
-1. **Variables de Entorno:**
-
-   ```bash
-   cd backend && cp .env.example .env && cd ..
-   ```
-
-2. **Iniciar Contenedores:**
-
-   ```bash
-   docker compose up --build -d
-   ```
-
-3. **Migraciones y Seed (Primera vez):**
-   ```bash
-   cd backend
-   npx prisma db push
-   npm run seed
-   ```
-
-### Accesos
-
-- **Frontend:** [http://localhost:3000](http://localhost:3000)
-- **Backend:** [http://localhost:5000](http://localhost:5000)
-- **Swagger:** [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+- [Docker](https://www.docker.com/) o **Docker Desktop** (para contenedor).
+- [Node.js](https://nodejs.org/es/) (v20) y una instancia de **PostgreSQL** (para ejecución local).
 
 ---
 
-### Comandos Útiles
+### Opción 1: Iniciar con Docker (Recomendado)
 
-**Detener servicios conservando volúmenes:**
+Inicia los servicios (Frontend, Backend y Base de datos) con un solo comando:
 
 ```bash
-docker compose down
+docker compose up --build -d
 ```
+
+---
+
+### Opción 2: Iniciar en Local (Sin Docker)
+
+Si prefieres ejecutar los servicios en tu máquina, sigue estos pasos:
+
+#### Configuración del Backend
+
+1. Ingresa a la carpeta del backend:
+
+   ```bash
+   cd backend
+   ```
+
+2. Instala las dependencias:
+
+   ```bash
+   npm install
+   ```
+
+3. Crea un archivo `.env` en la carpeta `backend` basado en el `.env.example` (configura tu `DATABASE_URL` apuntando a tu PostgreSQL local).
+4. Sincroniza el esquema de la base de datos, ejecuta las semillas (seeds) y levanta el servidor de desarrollo:
+
+   ```bash
+   npx prisma db push
+   npm run seed
+   npm run dev
+   ```
+
+   *(Nota: Puedes ejecutar `npm start` para sincronizar, poblar la bd e iniciar en producción).*
+
+#### Configuración del Frontend
+
+1. En una nueva terminal, ingresa a la carpeta del frontend:
+
+   ```bash
+   cd frontend
+   ```
+
+2. Instala las dependencias:
+
+   ```bash
+   npm install
+   ```
+
+3. Inicia el servidor de desarrollo:
+
+   ```bash
+   npm run dev
+   ```
+
+
+---
+
+### Accesos Universales
+
+Una vez en ejecución (ya sea por Docker o Local), los servicios estarán disponibles en:
+
+- **Frontend:** [http://localhost:3000](http://localhost:3000)
+- **Backend API:** [http://localhost:5000](http://localhost:5000)
+- **Documentación API (Swagger):** [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+
+---

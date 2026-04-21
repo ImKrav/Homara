@@ -5,10 +5,35 @@ import CategoryCard from "@/app/components/CategoryCard";
 import ProductCard from "@/app/components/ProductCard";
 import FeatureCard from "@/app/components/FeatureCard";
 import Button from "@/app/components/ui/Button";
-import { categories, products } from "@/app/lib/mock-data";
+import { Product, Category } from "@/app/lib/utils";
 
-export default function Home() {
-  const popularProducts = products.filter((p) => p.tags.includes("popular"));
+async function getCategories(): Promise<Category[]> {
+  try {
+    const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/categories", { cache: "no-store" });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data;
+  } catch (e) {
+    return [];
+  }
+}
+
+async function getPopularProducts(): Promise<Product[]> {
+  try {
+    const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/products?sort=popular&limit=4", { cache: "no-store" });
+    if (!res.ok) return [];
+    const json = await res.json();
+    return json.data;
+  } catch (e) {
+    return [];
+  }
+}
+
+export default async function Home() {
+  const [categories, popularProducts] = await Promise.all([
+    getCategories(),
+    getPopularProducts(),
+  ]);
 
   return (
     <>
@@ -29,7 +54,7 @@ export default function Home() {
             </p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {categories.map((cat) => (
+            {categories.map((cat: Category) => (
               <CategoryCard key={cat.id} category={cat} />
             ))}
           </div>
@@ -85,7 +110,7 @@ export default function Home() {
             </Button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {popularProducts.map((product) => (
+            {popularProducts.map((product: Product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>

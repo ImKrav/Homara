@@ -1,8 +1,12 @@
 import ProjectCard from "@/app/components/ProjectCard";
 import Button from "@/app/components/ui/Button";
-import { projects } from "@/app/lib/mock-data";
+import Link from "next/link";
 
-export default function ProyectosPage() {
+export default async function ProyectosPage() {
+  const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/projects", { cache: "no-store" });
+  const json = await res.ok ? await res.json() : { data: [] };
+  const projects = json.data || [];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}
@@ -30,17 +34,17 @@ export default function ProyectosPage() {
           },
           {
             label: "En progreso",
-            value: projects.filter((p) => p.status === "en_progreso").length,
+            value: projects.filter((p: any) => p.status === "en_progreso").length,
             icon: "🔄",
           },
           {
             label: "Completados",
-            value: projects.filter((p) => p.status === "completado").length,
+            value: projects.filter((p: any) => p.status === "completado").length,
             icon: "✅",
           },
           {
             label: "Pausados",
-            value: projects.filter((p) => p.status === "pausado").length,
+            value: projects.filter((p: any) => p.status === "pausado").length,
             icon: "⏸️",
           },
         ].map((stat) => (
@@ -59,12 +63,12 @@ export default function ProyectosPage() {
 
       {/* Projects Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
+        {projects.map((project: any) => (
           <ProjectCard key={project.id} project={project} />
         ))}
 
         {/* New project placeholder */}
-        <a
+        <Link
           href="/proyectos/nuevo"
           className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border hover:border-primary/50 p-8 text-center transition-all duration-200 group min-h-[220px]"
         >
@@ -87,7 +91,7 @@ export default function ProyectosPage() {
           <p className="text-sm font-medium text-text-muted group-hover:text-text-primary transition-colors">
             Crear nuevo proyecto
           </p>
-        </a>
+        </Link>
       </div>
     </div>
   );

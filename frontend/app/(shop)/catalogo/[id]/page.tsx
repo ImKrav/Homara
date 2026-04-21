@@ -1,7 +1,9 @@
-import { products, formatPrice } from "@/app/lib/mock-data";
+import Link from "next/link";
+import { formatPrice } from "@/app/lib/utils";
 import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 import ProductCard from "@/app/components/ProductCard";
+import AddToCartButton from "@/app/components/AddToCartButton";
 import { notFound } from "next/navigation";
 
 interface ProductDetailPageProps {
@@ -10,15 +12,15 @@ interface ProductDetailPageProps {
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { id } = await params;
-  const product = products.find((p) => p.id === id);
-
-  if (!product) {
-    notFound();
-  }
-
-  const relatedProducts = products
-    .filter((p) => p.categorySlug === product.categorySlug && p.id !== product.id)
-    .slice(0, 4);
+  
+  const res = await fetch(`${process.env.API_URL || "http://localhost:5000"}/api/products/${id}`, { cache: "no-store" });
+  if (!res.ok) notFound();
+  
+  const json = await res.json();
+  if (!json.success || !json.data) notFound();
+  
+  const product = json.data;
+  const relatedProducts = product.relatedProducts || [];
 
   const discount = product.originalPrice
     ? Math.round(
@@ -30,16 +32,16 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-text-muted mb-8">
-        <a href="/catalogo" className="hover:text-primary transition-colors">
+        <Link href="/catalogo" className="hover:text-primary transition-colors">
           Catálogo
-        </a>
+        </Link>
         <span>/</span>
-        <a
+        <Link
           href={`/catalogo?cat=${product.categorySlug}`}
           className="hover:text-primary transition-colors"
         >
           {product.category}
-        </a>
+        </Link>
         <span>/</span>
         <span className="text-text-secondary truncate">{product.name}</span>
       </nav>
@@ -105,11 +107,11 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               <span className="text-3xl font-bold text-text-primary">
                 {formatPrice(product.price)}
               </span>
-              {product.originalPrice && (
+              {product.originalPrice ? (
                 <span className="text-lg text-text-muted line-through">
                   {formatPrice(product.originalPrice)}
                 </span>
-              )}
+              ) : null}
             </div>
             <p className="text-sm text-text-muted mt-1">
               por {product.unit} • IVA incluido
@@ -145,9 +147,11 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
           {/* Actions */}
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Button size="lg" fullWidth disabled={!product.inStock}>
-              Agregar al Carrito
-            </Button>
+            <AddToCartButton 
+              productId={product.id} 
+              disabled={!product.inStock} 
+              fullWidth={true} 
+            />
             <Button
               variant="outline"
               size="lg"
@@ -166,7 +170,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             Productos Relacionados
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((p) => (
+            {relatedProducts.map((p: any) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

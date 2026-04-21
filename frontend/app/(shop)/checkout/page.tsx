@@ -1,27 +1,99 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Input from "@/app/components/ui/Input";
 import Button from "@/app/components/ui/Button";
 import Card from "@/app/components/ui/Card";
-import { products, formatPrice } from "@/app/lib/mock-data";
-
-const checkoutItems = [
-  { product: products[0], quantity: 4 },
-  { product: products[1], quantity: 1 },
-  { product: products[6], quantity: 3 },
-];
+import { formatPrice } from "@/app/lib/utils";
 
 export default function CheckoutPage() {
-  const subtotal = checkoutItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
-  const shipping = subtotal > 500000 ? 0 : 25000;
-  const total = subtotal + shipping;
+  const router = useRouter();
+  const [cart, setCart] = useState<any>({ items: [], subtotal: 0, shipping: 0, total: 0 });
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+
+  // Form State
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [zip, setZip] = useState("");
+  const [notes, setNotes] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("card");
+
+  useEffect(() => {
+    async function fetchCart() {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/cart`);
+        const json = await res.json();
+        if (json.success) {
+          setCart(json.data);
+        }
+      } catch (err) {
+        console.error("Error fetching cart", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchCart();
+  }, []);
+
+  const handleCheckout = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firstName || !lastName || !email || !phone || !address || !city || !state) {
+      alert("Por favor completa todos los campos requeridos.");
+      return;
+    }
+
+    try {
+      setProcessing(true);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/orders`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentMethod,
+          shippingAddress: address,
+          shippingCity: city,
+          shippingState: state,
+          shippingZip: zip,
+          shippingNotes: notes
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        window.dispatchEvent(new Event("cartUpdated"));
+        alert("¡Pedido realizado con éxito!");
+        router.push("/proyectos"); // O a alguna página de éxito / pedidos
+      } else {
+        alert(data.error || "Hubo un error al procesar el pedido.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error de conexión");
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const checkoutItems = cart.items || [];
+  const subtotal = cart.subtotal || 0;
+  const shipping = cart.shipping || 0;
+  const total = cart.total || 0;
+
+  if (loading) {
+    return <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 text-center">Cargando...</div>;
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-3xl font-bold text-text-primary mb-8">Checkout</h1>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <form onSubmit={handleCheckout} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Form */}
         <div className="lg:col-span-2 space-y-8">
           {/* Contact */}
@@ -34,12 +106,16 @@ export default function CheckoutPage() {
                 label="Nombre"
                 placeholder="Juan"
                 id="first-name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
                 required
               />
               <Input
                 label="Apellido"
                 placeholder="Pérez"
                 id="last-name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
                 required
               />
               <Input
@@ -47,6 +123,8 @@ export default function CheckoutPage() {
                 type="email"
                 placeholder="juan@email.com"
                 id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 className="sm:col-span-2"
               />
@@ -55,6 +133,8 @@ export default function CheckoutPage() {
                 type="tel"
                 placeholder="300 123 4567"
                 id="phone"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
                 required
               />
             </div>
@@ -70,6 +150,8 @@ export default function CheckoutPage() {
                 label="Dirección"
                 placeholder="Calle 123 # 45-67"
                 id="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
                 required
                 className="sm:col-span-2"
               />
@@ -77,23 +159,31 @@ export default function CheckoutPage() {
                 label="Ciudad"
                 placeholder="Bogotá"
                 id="city"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
                 required
               />
               <Input
                 label="Departamento"
                 placeholder="Cundinamarca"
                 id="state"
+                value={state}
+                onChange={(e) => setState(e.target.value)}
                 required
               />
               <Input
                 label="Código Postal"
                 placeholder="110111"
                 id="zip"
+                value={zip}
+                onChange={(e) => setZip(e.target.value)}
               />
               <Input
                 label="Notas adicionales"
                 placeholder="Apto 302, Torre B"
                 id="notes"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               />
             </div>
           </Card>
@@ -111,13 +201,16 @@ export default function CheckoutPage() {
               ].map((method) => (
                 <label
                   key={method.id}
-                  className="flex items-center gap-3 p-4 rounded-lg border border-border hover:border-primary/50 cursor-pointer transition-all duration-200"
+                  className={`flex items-center gap-3 p-4 rounded-lg border cursor-pointer transition-all duration-200 ${
+                    paymentMethod === method.id ? "border-primary bg-primary/5" : "border-border hover:border-primary/50"
+                  }`}
                 >
                   <input
                     type="radio"
                     name="payment"
                     value={method.id}
-                    defaultChecked={method.id === "card"}
+                    checked={paymentMethod === method.id}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
                     className="accent-primary"
                   />
                   <span className="text-sm text-text-primary font-medium">
@@ -127,25 +220,27 @@ export default function CheckoutPage() {
               ))}
             </div>
 
-            {/* Card mockup fields */}
-            <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Input
-                label="Número de tarjeta"
-                placeholder="1234 5678 9012 3456"
-                id="card-number"
-                className="sm:col-span-2"
-              />
-              <Input
-                label="Fecha de vencimiento"
-                placeholder="MM/AA"
-                id="card-expiry"
-              />
-              <Input
-                label="CVV"
-                placeholder="123"
-                id="card-cvv"
-              />
-            </div>
+            {/* Card mockup fields - solo visuales como maqueta en UI de pago pero funcionales para submit */}
+            {paymentMethod === "card" && (
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Input
+                  label="Número de tarjeta"
+                  placeholder="1234 5678 9012 3456"
+                  id="card-number"
+                  className="sm:col-span-2"
+                />
+                <Input
+                  label="Fecha de vencimiento"
+                  placeholder="MM/AA"
+                  id="card-expiry"
+                />
+                <Input
+                  label="CVV"
+                  placeholder="123"
+                  id="card-cvv"
+                />
+              </div>
+            )}
           </Card>
         </div>
 
@@ -157,9 +252,9 @@ export default function CheckoutPage() {
             </h2>
 
             <div className="space-y-4 mb-6">
-              {checkoutItems.map((item) => (
+              {checkoutItems.map((item: any) => (
                 <div
-                  key={item.product.id}
+                  key={item.id}
                   className="flex items-center gap-3"
                 >
                   <div className="w-10 h-10 bg-bg-surface-light rounded-lg flex items-center justify-center text-lg flex-shrink-0">
@@ -207,8 +302,8 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            <Button size="lg" fullWidth className="mt-6">
-              Pagar {formatPrice(total)}
+            <Button type="submit" disabled={processing} size="lg" fullWidth className="mt-6">
+              {processing ? "Procesando..." : `Pagar ${formatPrice(total)}`}
             </Button>
 
             <p className="text-xs text-text-muted text-center mt-4">
@@ -216,7 +311,7 @@ export default function CheckoutPage() {
             </p>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

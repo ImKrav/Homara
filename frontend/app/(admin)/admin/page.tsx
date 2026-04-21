@@ -1,13 +1,23 @@
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
-import {
-  adminMetrics,
-  orders,
-  formatPrice,
-  getStatusLabel,
-} from "@/app/lib/mock-data";
+import { formatPrice, getStatusLabel } from "@/app/lib/utils";
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const [ordersRes, metricsRes] = await Promise.all([
+    fetch((process.env.API_URL || "http://localhost:5000") + "/api/orders?admin=true", { cache: "no-store" }),
+    fetch((process.env.API_URL || "http://localhost:5000") + "/api/admin/metrics", { cache: "no-store" })
+  ]);
+  
+  const ordersJson = await ordersRes.ok ? await ordersRes.json() : { data: [] };
+  const metricsJson = await metricsRes.ok ? await metricsRes.json() : { data: [] };
+  
+  const orders = ordersJson.data || [];
+  const adminMetrics = metricsJson.data || [];
+  const charts = metricsJson.charts || {
+    salesByMonth: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    topCategories: []
+  };
+
   return (
     <div className="p-8">
       <div className="mb-8">
@@ -19,7 +29,7 @@ export default function AdminDashboard() {
 
       {/* Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        {adminMetrics.map((metric) => (
+        {adminMetrics.map((metric: any) => (
           <Card key={metric.label}>
             <div className="flex items-start justify-between">
               <div>
@@ -47,19 +57,20 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      {/* Charts placeholder */}
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
         <Card>
           <h3 className="text-sm font-semibold text-text-primary mb-4">
             Ventas por Mes
           </h3>
           <div className="h-48 flex items-end gap-2 px-4">
-            {[40, 65, 45, 80, 55, 90, 70, 85, 60, 95, 75, 88].map(
-              (val, i) => (
+            {charts.salesByMonth.map(
+              (val: number, i: number) => (
                 <div key={i} className="flex-1 flex flex-col items-center gap-1">
                   <div
                     className="w-full bg-primary/20 rounded-t-md hover:bg-primary/40 transition-colors"
                     style={{ height: `${val}%` }}
+                    title={`${val}%`}
                   />
                   <span className="text-[10px] text-text-muted">
                     {
@@ -77,13 +88,7 @@ export default function AdminDashboard() {
             Categorías más vendidas
           </h3>
           <div className="space-y-4">
-            {[
-              { name: "Pisos y Cerámicas", pct: 35 },
-              { name: "Herramientas", pct: 28 },
-              { name: "Materiales de Construcción", pct: 18 },
-              { name: "Pinturas", pct: 12 },
-              { name: "Otros", pct: 7 },
-            ].map((cat) => (
+            {charts.topCategories.length > 0 ? charts.topCategories.map((cat: any) => (
               <div key={cat.name}>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-text-secondary">{cat.name}</span>
@@ -98,7 +103,9 @@ export default function AdminDashboard() {
                   />
                 </div>
               </div>
-            ))}
+            )) : (
+              <p className="text-sm text-text-muted text-center pt-8">No hay datos suficientes.</p>
+            )}
           </div>
         </Card>
       </div>
@@ -139,7 +146,7 @@ export default function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => {
+              {orders.map((order: any) => {
                 const statusVariant =
                   order.status === "entregado"
                     ? "success"

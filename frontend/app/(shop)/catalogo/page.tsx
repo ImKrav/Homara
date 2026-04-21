@@ -1,25 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductCard from "@/app/components/ProductCard";
 import SearchBar from "@/app/components/SearchBar";
-import { products, categories } from "@/app/lib/mock-data";
+import { Product, Category } from "@/app/lib/utils";
 
 export default function CatalogoPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
   const [sortBy, setSortBy] = useState<string>("popular");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredProducts =
-    selectedCategory === "todos"
-      ? products
-      : products.filter((p) => p.categorySlug === selectedCategory);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const [prodRes, catRes] = await Promise.all([
+          fetch(`${process.env.API_URL || "http://localhost:5000"}/api/products?category=${selectedCategory}&sort=${sortBy}&limit=50`),
+          fetch((process.env.API_URL || "http://localhost:5000") + "/api/categories")
+        ]);
+        const prodData = await prodRes.json();
+        const catData = await catRes.json();
+        if (prodData.success) setProducts(prodData.data);
+        if (catData.success) setCategories(catData.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [selectedCategory, sortBy]);
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortBy === "precio-asc") return a.price - b.price;
-    if (sortBy === "precio-desc") return b.price - a.price;
-    if (sortBy === "rating") return b.rating - a.rating;
-    return b.reviews - a.reviews; // popular
-  });
+  const sortedProducts = products;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -48,7 +62,8 @@ export default function CatalogoPage() {
           >
             Todos
           </button>
-          {categories.map((cat) => (
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+          {categories.map((cat: any) => (
             <button
               key={cat.slug}
               onClick={() => setSelectedCategory(cat.slug)}
@@ -61,6 +76,7 @@ export default function CatalogoPage() {
               {cat.icon} {cat.name}
             </button>
           ))}
+          </div>
         </div>
 
         {/* Sort */}
@@ -83,8 +99,8 @@ export default function CatalogoPage() {
       </p>
 
       {/* Product grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {sortedProducts.map((product) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {sortedProducts.map((product: any) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
