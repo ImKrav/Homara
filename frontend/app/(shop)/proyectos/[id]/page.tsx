@@ -1,4 +1,4 @@
-import { formatPrice, getStatusLabel } from "@/app/lib/mock-data";
+import { formatPrice, getStatusLabel } from "@/app/lib/utils";
 import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 import ProductCard from "@/app/components/ProductCard";
@@ -103,7 +103,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         </h2>
         <div className="bg-bg-surface rounded-xl border border-border overflow-hidden">
           <div className="divide-y divide-border">
-            {materials.map((mat) => (
+            {materials.map((mat: any) => (
               <div
                 key={mat.name}
                 className="flex items-center gap-4 p-4 hover:bg-bg-surface-light transition-colors"
@@ -149,7 +149,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           Productos Sugeridos
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {suggestedProducts.map((p) => (
+          {suggestedProducts.map((p: any) => (
             <ProductCard key={p.id} product={p} />
           ))}
         </div>

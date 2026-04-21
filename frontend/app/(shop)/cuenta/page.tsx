@@ -1,7 +1,7 @@
 import Card from "@/app/components/ui/Card";
 import Button from "@/app/components/ui/Button";
 import Badge from "@/app/components/ui/Badge";
-import { formatPrice, getStatusLabel } from "@/app/lib/mock-data";
+import { formatPrice, getStatusLabel } from "@/app/lib/utils";
 
 export default async function CuentaPage() {
   const res = await fetch("http://localhost:5000/api/orders", { cache: "no-store" });
@@ -53,7 +53,7 @@ export default async function CuentaPage() {
           </div>
 
           <div className="space-y-4">
-            {orders.slice(0, 4).map((order) => {
+            {orders.slice(0, 4).map((order: any) => {
               const statusVariant =
                 order.status === "entregado"
                   ? "success"

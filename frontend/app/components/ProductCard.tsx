@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Badge from "@/app/components/ui/Badge";
-import { type Product, formatPrice } from "@/app/lib/mock-data";
+import { type Product, formatPrice } from "@/app/lib/utils";
 
 interface ProductCardProps {
   product: Product;

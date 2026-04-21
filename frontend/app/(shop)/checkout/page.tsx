@@ -1,7 +1,7 @@
 import Input from "@/app/components/ui/Input";
 import Button from "@/app/components/ui/Button";
 import Card from "@/app/components/ui/Card";
-import { formatPrice } from "@/app/lib/mock-data";
+import { formatPrice } from "@/app/lib/utils";
 
 export default async function CheckoutPage() {
   const res = await fetch("http://localhost:5000/api/cart", { cache: "no-store" });
@@ -153,7 +153,7 @@ export default async function CheckoutPage() {
             </h2>
 
             <div className="space-y-4 mb-6">
-              {checkoutItems.map((item) => (
+              {checkoutItems.map((item: any) => (
                 <div
                   key={item.product.id}
                   className="flex items-center gap-3"

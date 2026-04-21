@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import ProductCard from "@/app/components/ProductCard";
 import SearchBar from "@/app/components/SearchBar";
-import { Product, Category } from "@/app/lib/mock-data";
+import { Product, Category } from "@/app/lib/utils";
 
 export default function CatalogoPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");

@@ -1,4 +1,4 @@
-import { formatPrice } from "@/app/lib/mock-data";
+import { formatPrice } from "@/app/lib/utils";
 import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 import ProductCard from "@/app/components/ProductCard";
@@ -166,7 +166,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
             Productos Relacionados
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((p) => (
+            {relatedProducts.map((p: any) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

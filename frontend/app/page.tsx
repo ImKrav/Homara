@@ -5,7 +5,7 @@ import CategoryCard from "@/app/components/CategoryCard";
 import ProductCard from "@/app/components/ProductCard";
 import FeatureCard from "@/app/components/FeatureCard";
 import Button from "@/app/components/ui/Button";
-import { Product, Category } from "@/app/lib/mock-data";
+import { Product, Category } from "@/app/lib/utils";
 
 async function getCategories(): Promise<Category[]> {
   try {

@@ -1,6 +1,6 @@
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
-import { formatPrice, getStatusLabel } from "@/app/lib/mock-data";
+import { formatPrice, getStatusLabel } from "@/app/lib/utils";
 
 export default async function AdminDashboard() {
   const [ordersRes, metricsRes] = await Promise.all([

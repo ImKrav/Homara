@@ -5,7 +5,7 @@ import {
   formatPrice,
   getStatusLabel,
   getStatusColor,
-} from "@/app/lib/mock-data";
+} from "@/app/lib/utils";
 
 interface ProjectCardProps {
   project: Project;

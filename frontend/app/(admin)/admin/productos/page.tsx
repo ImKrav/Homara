@@ -1,7 +1,7 @@
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
-import { formatPrice } from "@/app/lib/mock-data";
+import { formatPrice } from "@/app/lib/utils";
 
 export default async function AdminProductosPage() {
   const res = await fetch("http://localhost:5000/api/products?limit=100", { cache: "no-store" });

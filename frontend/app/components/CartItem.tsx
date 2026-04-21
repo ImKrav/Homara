@@ -1,6 +1,6 @@
 "use client";
 
-import { type Product, formatPrice } from "@/app/lib/mock-data";
+import { type Product, formatPrice } from "@/app/lib/utils";
 
 interface CartItemCardProps {
   product: Product;

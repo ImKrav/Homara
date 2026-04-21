@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import CartItemCard from "@/app/components/CartItem";
 import Button from "@/app/components/ui/Button";
-import { formatPrice } from "@/app/lib/mock-data";
+import { formatPrice } from "@/app/lib/utils";
 
 export default function CarritoPage() {
   const [cartItems, setCartItems] = useState<any[]>([]);
