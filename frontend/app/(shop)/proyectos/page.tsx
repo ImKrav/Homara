@@ -33,17 +33,17 @@ export default async function ProyectosPage() {
           },
           {
             label: "En progreso",
-            value: projects.filter((p) => p.status === "en_progreso").length,
+            value: projects.filter((p: any) => p.status === "en_progreso").length,
             icon: "🔄",
           },
           {
             label: "Completados",
-            value: projects.filter((p) => p.status === "completado").length,
+            value: projects.filter((p: any) => p.status === "completado").length,
             icon: "✅",
           },
           {
             label: "Pausados",
-            value: projects.filter((p) => p.status === "pausado").length,
+            value: projects.filter((p: any) => p.status === "pausado").length,
             icon: "⏸️",
           },
         ].map((stat) => (
@@ -62,7 +62,7 @@ export default async function ProyectosPage() {
 
       {/* Projects Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {projects.map((project) => (
+        {projects.map((project: any) => (
           <ProjectCard key={project.id} project={project} />
         ))}
 

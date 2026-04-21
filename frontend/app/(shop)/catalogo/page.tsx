@@ -62,7 +62,8 @@ export default function CatalogoPage() {
           >
             Todos
           </button>
-          {categories.map((cat) => (
+          <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+          {categories.map((cat: any) => (
             <button
               key={cat.slug}
               onClick={() => setSelectedCategory(cat.slug)}
@@ -75,6 +76,7 @@ export default function CatalogoPage() {
               {cat.icon} {cat.name}
             </button>
           ))}
+          </div>
         </div>
 
         {/* Sort */}
@@ -97,8 +99,8 @@ export default function CatalogoPage() {
       </p>
 
       {/* Product grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {sortedProducts.map((product) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {sortedProducts.map((product: any) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
