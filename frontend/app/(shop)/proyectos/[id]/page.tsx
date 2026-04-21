@@ -3,6 +3,7 @@ import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 import ProductCard from "@/app/components/ProductCard";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 interface ProjectDetailPageProps {
   params: Promise<{ id: string }>;
@@ -37,9 +38,9 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-text-muted mb-8">
-        <a href="/proyectos" className="hover:text-primary transition-colors">
+        <Link href="/proyectos" className="hover:text-primary transition-colors">
           Proyectos
-        </a>
+        </Link>
         <span>/</span>
         <span className="text-text-secondary">{project.name}</span>
       </nav>
@@ -134,11 +135,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         </div>
 
         <div className="mt-4 flex gap-3">
-          <Button size="md">
-            Agregar todo al Carrito
+          <Button href={`/catalogo?cat=${project.materialType}`} size="md">
+            Buscar en Catálogo
           </Button>
-          <Button variant="outline" size="md">
-            Exportar lista
+          <Button variant="outline" size="md" href="/catalogo">
+            Ver más productos
           </Button>
         </div>
       </div>

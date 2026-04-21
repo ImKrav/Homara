@@ -1,5 +1,6 @@
 import ProjectCard from "@/app/components/ProjectCard";
 import Button from "@/app/components/ui/Button";
+import Link from "next/link";
 
 export default async function ProyectosPage() {
   const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/projects", { cache: "no-store" });
@@ -67,7 +68,7 @@ export default async function ProyectosPage() {
         ))}
 
         {/* New project placeholder */}
-        <a
+        <Link
           href="/proyectos/nuevo"
           className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border hover:border-primary/50 p-8 text-center transition-all duration-200 group min-h-[220px]"
         >
@@ -90,7 +91,7 @@ export default async function ProyectosPage() {
           <p className="text-sm font-medium text-text-muted group-hover:text-text-primary transition-colors">
             Crear nuevo proyecto
           </p>
-        </a>
+        </Link>
       </div>
     </div>
   );

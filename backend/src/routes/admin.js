@@ -77,6 +77,49 @@ router.get("/metrics", async (req, res, next) => {
         minimumFractionDigits: 0,
       }).format(value);
 
+    // Chart Data: Ventas por Mes
+    const currentYear = now.getFullYear();
+    const currentYearOrders = await prisma.order.findMany({
+      where: {
+        createdAt: { gte: new Date(currentYear, 0, 1) },
+        status: { not: "CANCELADO" },
+      },
+      select: { createdAt: true, total: true },
+    });
+    
+    const monthlySales = Array(12).fill(0);
+    currentYearOrders.forEach(o => {
+      monthlySales[o.createdAt.getMonth()] += o.total;
+    });
+    const maxMonthlySale = Math.max(...monthlySales, 1);
+    const salesByMonth = monthlySales.map(val => Math.round((val / maxMonthlySale) * 100));
+
+    // Chart Data: Categorías más vendidas
+    const orderItems = await prisma.orderItem.findMany({
+      where: {
+        order: { status: { not: "CANCELADO" } }
+      },
+      include: {
+        product: {
+          include: { category: true }
+        }
+      }
+    });
+    const categorySales = {};
+    let totalCategorySales = 0;
+    orderItems.forEach(item => {
+      const catName = item.product.category.name;
+      if (!categorySales[catName]) categorySales[catName] = 0;
+      categorySales[catName] += item.total;
+      totalCategorySales += item.total;
+    });
+    const topCategories = Object.keys(categorySales).map(name => {
+      return {
+        name,
+        pct: totalCategorySales > 0 ? Math.round((categorySales[name] / totalCategorySales) * 100) : 0
+      };
+    }).sort((a,b) => b.pct - a.pct).slice(0, 5);
+
     res.json({
       success: true,
       data: [
@@ -105,6 +148,10 @@ router.get("/metrics", async (req, res, next) => {
           icon: "👥",
         },
       ],
+      charts: {
+        salesByMonth,
+        topCategories
+      }
     });
   } catch (error) {
     next(error);

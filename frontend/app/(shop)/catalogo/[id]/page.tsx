@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { formatPrice } from "@/app/lib/utils";
 import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 import ProductCard from "@/app/components/ProductCard";
+import AddToCartButton from "@/app/components/AddToCartButton";
 import { notFound } from "next/navigation";
 
 interface ProductDetailPageProps {
@@ -30,16 +32,16 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-text-muted mb-8">
-        <a href="/catalogo" className="hover:text-primary transition-colors">
+        <Link href="/catalogo" className="hover:text-primary transition-colors">
           Catálogo
-        </a>
+        </Link>
         <span>/</span>
-        <a
+        <Link
           href={`/catalogo?cat=${product.categorySlug}`}
           className="hover:text-primary transition-colors"
         >
           {product.category}
-        </a>
+        </Link>
         <span>/</span>
         <span className="text-text-secondary truncate">{product.name}</span>
       </nav>
@@ -145,9 +147,11 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
 
           {/* Actions */}
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
-            <Button size="lg" fullWidth disabled={!product.inStock}>
-              Agregar al Carrito
-            </Button>
+            <AddToCartButton 
+              productId={product.id} 
+              disabled={!product.inStock} 
+              fullWidth={true} 
+            />
             <Button
               variant="outline"
               size="lg"

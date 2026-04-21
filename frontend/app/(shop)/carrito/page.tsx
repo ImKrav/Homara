@@ -18,7 +18,7 @@ export default function CarritoPage() {
 
   const fetchCart = async () => {
     try {
-      const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/cart");
+      const res = await fetch((process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000") + "/api/cart");
       const json = await res.json();
       if (json.success) {
         setCartItems(json.data.items);
@@ -36,12 +36,13 @@ export default function CarritoPage() {
   const handleQuantityChange = async (index: number, quantity: number) => {
     const item = cartItems[index];
     try {
-      await fetch(`${process.env.API_URL || "http://localhost:5000"}/api/cart/items/${item.id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/cart/items/${item.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ quantity })
       });
       fetchCart();
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (e) {
       console.error(e);
     }
@@ -50,10 +51,11 @@ export default function CarritoPage() {
   const handleRemove = async (index: number) => {
     const item = cartItems[index];
     try {
-      await fetch(`${process.env.API_URL || "http://localhost:5000"}/api/cart/items/${item.id}`, {
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/cart/items/${item.id}`, {
         method: "DELETE"
       });
       fetchCart();
+      window.dispatchEvent(new Event("cartUpdated"));
     } catch (e) {
       console.error(e);
     }
