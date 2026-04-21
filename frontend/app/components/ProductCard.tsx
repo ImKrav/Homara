@@ -1,12 +1,20 @@
 import Link from "next/link";
 import Badge from "@/app/components/ui/Badge";
 import { type Product, formatPrice } from "@/app/lib/mock-data";
+import { ApiProduct } from "@/app/lib/api";
 
 interface ProductCardProps {
-  product: Product;
+  product: Product | ApiProduct;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  // Compatibilidad con ambas interfaces
+  const categorySlug = "categorySlug" in product ? product.categorySlug : product.category?.slug || "";
+  const categoryName = "category" in product && typeof product.category === "string" 
+    ? product.category 
+    : ("category" in product && typeof product.category === "object" ? product.category?.name : "");
+  const tags = product.tags || [];
+  
   const discount = product.originalPrice
     ? Math.round(
         ((product.originalPrice - product.price) / product.originalPrice) * 100
@@ -19,12 +27,13 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Image area */}
         <div className="relative aspect-square bg-bg-surface-light overflow-hidden">
           <div className="absolute inset-0 flex items-center justify-center text-6xl opacity-40 group-hover:opacity-60 transition-opacity duration-300">
-            {product.categorySlug === "pisos-ceramicas" && "🏗️"}
-            {product.categorySlug === "herramientas" && "🔧"}
-            {product.categorySlug === "pinturas" && "🎨"}
-            {product.categorySlug === "muebles" && "🪑"}
-            {product.categorySlug === "iluminacion" && "💡"}
-            {product.categorySlug === "materiales-construccion" && "🧱"}
+            {categorySlug === "pisos-ceramicas" && "🏗️"}
+            {categorySlug === "herramientas" && "🔧"}
+            {categorySlug === "pinturas" && "🎨"}
+            {categorySlug === "muebles" && "🪑"}
+            {categorySlug === "iluminacion" && "💡"}
+            {categorySlug === "materiales-construccion" && "🧱"}
+            {!categorySlug && "📦"}
           </div>
 
           {/* Badges */}
@@ -34,7 +43,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                 -{discount}%
               </Badge>
             )}
-            {product.tags.includes("nuevo") && (
+            {tags.includes("nuevo") && (
               <Badge variant="info" size="sm">
                 Nuevo
               </Badge>
@@ -49,7 +58,7 @@ export default function ProductCard({ product }: ProductCardProps) {
 
         {/* Content */}
         <div className="p-4">
-          <p className="text-xs text-text-muted mb-1">{product.category}</p>
+          <p className="text-xs text-text-muted mb-1">{categoryName}</p>
           <h3 className="text-sm font-semibold text-text-primary group-hover:text-primary transition-colors duration-200 line-clamp-2 leading-snug">
             {product.name}
           </h3>
