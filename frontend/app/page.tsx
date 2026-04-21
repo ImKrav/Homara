@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import Hero from "@/app/components/Hero";
 import Navbar from "@/app/components/Navbar";
 import Footer from "@/app/components/Footer";
@@ -6,31 +5,10 @@ import CategoryCard from "@/app/components/CategoryCard";
 import ProductCard from "@/app/components/ProductCard";
 import FeatureCard from "@/app/components/FeatureCard";
 import Button from "@/app/components/ui/Button";
-import { categoriesApi, productsApi } from "@/app/lib/api";
+import { categories, products } from "@/app/lib/mock-data";
 
-async function HomePage() {
-  // Cargar datos en el servidor
-  let categories = [];
-  let popularProducts = [];
-  let error = null;
-
-  try {
-    const [categoriesRes, productsRes] = await Promise.all([
-      categoriesApi.getAll(),
-      productsApi.getAll({ limit: 8 }),
-    ]);
-
-    if (categoriesRes.success) {
-      categories = categoriesRes.data;
-    }
-
-    if (productsRes.success) {
-      popularProducts = productsRes.data.filter(p => p.tags.includes("popular")).slice(0, 8);
-    }
-  } catch (err) {
-    console.error("Error cargando datos:", err);
-    error = "No se pudieron cargar los datos";
-  }
+export default function Home() {
+  const popularProducts = products.filter((p) => p.tags.includes("popular"));
 
   return (
     <>
@@ -133,35 +111,5 @@ async function HomePage() {
 
       <Footer />
     </>
-  );
-}
-
-export default HomePage;
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-async function getHealth() {
-  const res = await fetch(`${API_URL}/health`, {
-    // Si es cross-origin y el backend soporta CORS, esto debería funcionar
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    // cache: "no-store", // si necesitas desactivar caché en Next 13+
-  });
-
-  if (!res.ok) {
-    throw new Error("Error consultando backend");
-  }
-
-  return res.json();
-}
-export default async function HomePage() {
-  const health = await getHealth();
-
-  return (
-    <main>
-      <h1>Conexión frontend-backend</h1>
-      <pre>{JSON.stringify(health, null, 2)}</pre>
-    </main>
   );
 }

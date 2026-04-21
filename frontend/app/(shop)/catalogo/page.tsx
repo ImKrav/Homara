@@ -1,57 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ProductCard from "@/app/components/ProductCard";
 import SearchBar from "@/app/components/SearchBar";
-import { categoriesApi, productsApi, ApiCategory, ApiProduct } from "@/app/lib/api";
+import { products, categories } from "@/app/lib/mock-data";
 
 export default function CatalogoPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
   const [sortBy, setSortBy] = useState<string>("popular");
-  const [products, setProducts] = useState<ApiProduct[]>([]);
-  const [categories, setCategories] = useState<ApiCategory[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  // Cargar categorías
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const response = await categoriesApi.getAll();
-        if (response.success) {
-          setCategories(response.data);
-        }
-      } catch (err) {
-        console.error("Error cargando categorías:", err);
-        setError("No se pudieron cargar las categorías");
-      }
-    };
-    loadCategories();
-  }, []);
+  const filteredProducts =
+    selectedCategory === "todos"
+      ? products
+      : products.filter((p) => p.categorySlug === selectedCategory);
 
-  // Cargar productos
-  useEffect(() => {
-    const loadProducts = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await productsApi.getAll({
-          category: selectedCategory,
-          sort: sortBy as any,
-        });
-        if (response.success) {
-          setProducts(response.data);
-        }
-      } catch (err) {
-        console.error("Error cargando productos:", err);
-        setError("No se pudieron cargar los productos");
-        setProducts([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadProducts();
-  }, [selectedCategory, sortBy]);
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    if (sortBy === "precio-asc") return a.price - b.price;
+    if (sortBy === "precio-desc") return b.price - a.price;
+    if (sortBy === "rating") return b.rating - a.rating;
+    return b.reviews - a.reviews; // popular
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -111,37 +79,18 @@ export default function CatalogoPage() {
 
       {/* Results count */}
       <p className="text-sm text-text-muted mb-6">
-        {isLoading ? "Cargando..." : `${products.length} productos encontrados`}
+        {sortedProducts.length} productos encontrados
       </p>
 
-      {/* Error state */}
-      {error && (
-        <div className="bg-error/10 border border-error rounded-lg p-4 mb-6">
-          <p className="text-error font-medium">⚠️ {error}</p>
-        </div>
-      )}
-
-      {/* Loading state */}
-      {isLoading && (
-        <div className="text-center py-20">
-          <div className="inline-block">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-          </div>
-          <p className="mt-4 text-text-secondary">Cargando productos...</p>
-        </div>
-      )}
-
       {/* Product grid */}
-      {!isLoading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
-      )}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {sortedProducts.map((product) => (
+          <ProductCard key={product.id} product={product} />
+        ))}
+      </div>
 
       {/* Empty state */}
-      {!isLoading && products.length === 0 && (
+      {sortedProducts.length === 0 && (
         <div className="text-center py-20">
           <span className="text-5xl block mb-4">🔍</span>
           <h3 className="text-lg font-semibold text-text-primary mb-2">
