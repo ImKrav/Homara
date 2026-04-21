@@ -2,7 +2,7 @@ import ProjectCard from "@/app/components/ProjectCard";
 import Button from "@/app/components/ui/Button";
 
 export default async function ProyectosPage() {
-  const res = await fetch("http://localhost:5000/api/projects", { cache: "no-store" });
+  const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/projects", { cache: "no-store" });
   const json = await res.ok ? await res.json() : { data: [] };
   const projects = json.data || [];
 

@@ -11,7 +11,7 @@ interface ProductDetailPageProps {
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { id } = await params;
   
-  const res = await fetch(`http://localhost:5000/api/products/${id}`, { cache: "no-store" });
+  const res = await fetch(`${process.env.API_URL || "http://localhost:5000"}/api/products/${id}`, { cache: "no-store" });
   if (!res.ok) notFound();
   
   const json = await res.json();

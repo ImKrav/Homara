@@ -3,7 +3,7 @@ import Badge from "@/app/components/ui/Badge";
 import { formatPrice, getStatusLabel } from "@/app/lib/utils";
 
 export default async function AdminPedidosPage() {
-  const res = await fetch("http://localhost:5000/api/orders?admin=true", { cache: "no-store" });
+  const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/orders?admin=true", { cache: "no-store" });
   const json = await res.ok ? await res.json() : { data: [] };
   const orders = json.data || [];
 

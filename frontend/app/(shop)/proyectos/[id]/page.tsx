@@ -11,7 +11,7 @@ interface ProjectDetailPageProps {
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { id } = await params;
   
-  const res = await fetch(`http://localhost:5000/api/projects/${id}`, { cache: "no-store" });
+  const res = await fetch(`${process.env.API_URL || "http://localhost:5000"}/api/projects/${id}`, { cache: "no-store" });
   if (!res.ok) notFound();
   
   const json = await res.json();
@@ -29,7 +29,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       ? "warning"
       : "default";
 
-  const suggestedRes = await fetch("http://localhost:5000/api/products?category=pisos-ceramicas&limit=4", { cache: "no-store" });
+  const suggestedRes = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/products?category=pisos-ceramicas&limit=4", { cache: "no-store" });
   const suggestedJson = await suggestedRes.ok ? await suggestedRes.json() : { data: [] };
   const suggestedProducts = suggestedJson.data || [];
 

@@ -17,8 +17,8 @@ export default function CatalogoPage() {
       try {
         setLoading(true);
         const [prodRes, catRes] = await Promise.all([
-          fetch(`http://localhost:5000/api/products?category=${selectedCategory}&sort=${sortBy}&limit=50`),
-          fetch("http://localhost:5000/api/categories")
+          fetch(`${process.env.API_URL || "http://localhost:5000"}/api/products?category=${selectedCategory}&sort=${sortBy}&limit=50`),
+          fetch((process.env.API_URL || "http://localhost:5000") + "/api/categories")
         ]);
         const prodData = await prodRes.json();
         const catData = await catRes.json();

@@ -3,7 +3,7 @@ import Badge from "@/app/components/ui/Badge";
 import { formatPrice } from "@/app/lib/utils";
 
 export default async function AdminInventarioPage() {
-  const res = await fetch("http://localhost:5000/api/admin/inventory", { cache: "no-store" });
+  const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/admin/inventory", { cache: "no-store" });
   const json = await res.ok ? await res.json() : { data: { products: [], stats: {} } };
   
   const products = json.data?.products || [];

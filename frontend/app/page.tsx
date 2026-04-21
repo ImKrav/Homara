@@ -9,7 +9,7 @@ import { Product, Category } from "@/app/lib/utils";
 
 async function getCategories(): Promise<Category[]> {
   try {
-    const res = await fetch("http://localhost:5000/api/categories", { cache: "no-store" });
+    const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/categories", { cache: "no-store" });
     if (!res.ok) return [];
     const json = await res.json();
     return json.data;
@@ -20,7 +20,7 @@ async function getCategories(): Promise<Category[]> {
 
 async function getPopularProducts(): Promise<Product[]> {
   try {
-    const res = await fetch("http://localhost:5000/api/products?sort=popular&limit=4", { cache: "no-store" });
+    const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/products?sort=popular&limit=4", { cache: "no-store" });
     if (!res.ok) return [];
     const json = await res.json();
     return json.data;

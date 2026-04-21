@@ -4,7 +4,7 @@ import Card from "@/app/components/ui/Card";
 import { formatPrice } from "@/app/lib/utils";
 
 export default async function CheckoutPage() {
-  const res = await fetch("http://localhost:5000/api/cart", { cache: "no-store" });
+  const res = await fetch((process.env.API_URL || "http://localhost:5000") + "/api/cart", { cache: "no-store" });
   const json = await res.ok ? await res.json() : { data: { items: [], subtotal: 0, shipping: 0, total: 0 } };
   const cart = json.data;
 

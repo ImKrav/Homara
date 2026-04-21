@@ -4,8 +4,8 @@ import { formatPrice, getStatusLabel } from "@/app/lib/utils";
 
 export default async function AdminDashboard() {
   const [ordersRes, metricsRes] = await Promise.all([
-    fetch("http://localhost:5000/api/orders?admin=true", { cache: "no-store" }),
-    fetch("http://localhost:5000/api/admin/metrics", { cache: "no-store" })
+    fetch((process.env.API_URL || "http://localhost:5000") + "/api/orders?admin=true", { cache: "no-store" }),
+    fetch((process.env.API_URL || "http://localhost:5000") + "/api/admin/metrics", { cache: "no-store" })
   ]);
   
   const ordersJson = await ordersRes.ok ? await ordersRes.json() : { data: [] };
