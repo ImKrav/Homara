@@ -105,11 +105,11 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
               <span className="text-3xl font-bold text-text-primary">
                 {formatPrice(product.price)}
               </span>
-              {product.originalPrice && (
+              {product.originalPrice ? (
                 <span className="text-lg text-text-muted line-through">
                   {formatPrice(product.originalPrice)}
                 </span>
-              )}
+              ) : null}
             </div>
             <p className="text-sm text-text-muted mt-1">
               por {product.unit} • IVA incluido

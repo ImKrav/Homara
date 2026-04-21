@@ -75,7 +75,7 @@ export default async function AdminPedidosPage() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => {
+              {orders.map((order: any) => {
                 const statusVariant =
                   order.status === "entregado"
                     ? "success"

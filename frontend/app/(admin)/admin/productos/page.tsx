@@ -46,7 +46,7 @@ export default async function AdminProductosPage() {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {products.map((product: any) => (
                 <tr
                   key={product.id}
                   className="border-b border-border/50 hover:bg-bg-surface-light transition-colors"

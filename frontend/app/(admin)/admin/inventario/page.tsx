@@ -110,7 +110,7 @@ export default async function AdminInventarioPage() {
               </tr>
             </thead>
             <tbody>
-              {sortedByStock.map((product) => {
+              {sortedByStock.map((product: any) => {
                 const stockStatus =
                   product.stockQuantity === 0
                     ? "error"

@@ -24,7 +24,7 @@ export default async function AdminDashboard() {
 
       {/* Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-        {adminMetrics.map((metric) => (
+        {adminMetrics.map((metric: any) => (
           <Card key={metric.label}>
             <div className="flex items-start justify-between">
               <div>
@@ -144,7 +144,7 @@ export default async function AdminDashboard() {
               </tr>
             </thead>
             <tbody>
-              {orders.map((order) => {
+              {orders.map((order: any) => {
                 const statusVariant =
                   order.status === "entregado"
                     ? "success"
