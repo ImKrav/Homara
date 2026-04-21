@@ -1,35 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import CartItemCard from "@/app/components/CartItem";
 import Button from "@/app/components/ui/Button";
-import { products, formatPrice } from "@/app/lib/mock-data";
-
-const initialCart = [
-  { product: products[0], quantity: 4 },
-  { product: products[1], quantity: 1 },
-  { product: products[6], quantity: 3 },
-];
+import { formatPrice } from "@/app/lib/mock-data";
 
 export default function CarritoPage() {
-  const [cartItems, setCartItems] = useState(initialCart);
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [subtotal, setSubtotal] = useState(0);
+  const [shipping, setShipping] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
-  const shipping = subtotal > 500000 ? 0 : 25000;
-  const total = subtotal + shipping;
+  useEffect(() => {
+    fetchCart();
+  }, []);
 
-  const handleQuantityChange = (index: number, quantity: number) => {
-    setCartItems((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, quantity } : item))
-    );
+  const fetchCart = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/cart");
+      const json = await res.json();
+      if (json.success) {
+        setCartItems(json.data.items);
+        setSubtotal(json.data.subtotal);
+        setShipping(json.data.shipping);
+        setTotal(json.data.total);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRemove = (index: number) => {
-    setCartItems((prev) => prev.filter((_, i) => i !== index));
+  const handleQuantityChange = async (index: number, quantity: number) => {
+    const item = cartItems[index];
+    try {
+      await fetch(`http://localhost:5000/api/cart/items/${item.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quantity })
+      });
+      fetchCart();
+    } catch (e) {
+      console.error(e);
+    }
   };
+
+  const handleRemove = async (index: number) => {
+    const item = cartItems[index];
+    try {
+      await fetch(`http://localhost:5000/api/cart/items/${item.id}`, {
+        method: "DELETE"
+      });
+      fetchCart();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  if (loading) {
+    return <div className="max-w-7xl mx-auto px-4 py-20 text-center">Cargando carrito...</div>;
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

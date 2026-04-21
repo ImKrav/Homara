@@ -1,25 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ProductCard from "@/app/components/ProductCard";
 import SearchBar from "@/app/components/SearchBar";
-import { products, categories } from "@/app/lib/mock-data";
+import { Product, Category } from "@/app/lib/mock-data";
 
 export default function CatalogoPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>("todos");
   const [sortBy, setSortBy] = useState<string>("popular");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredProducts =
-    selectedCategory === "todos"
-      ? products
-      : products.filter((p) => p.categorySlug === selectedCategory);
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        setLoading(true);
+        const [prodRes, catRes] = await Promise.all([
+          fetch(`http://localhost:5000/api/products?category=${selectedCategory}&sort=${sortBy}&limit=50`),
+          fetch("http://localhost:5000/api/categories")
+        ]);
+        const prodData = await prodRes.json();
+        const catData = await catRes.json();
+        if (prodData.success) setProducts(prodData.data);
+        if (catData.success) setCategories(catData.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, [selectedCategory, sortBy]);
 
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (sortBy === "precio-asc") return a.price - b.price;
-    if (sortBy === "precio-desc") return b.price - a.price;
-    if (sortBy === "rating") return b.rating - a.rating;
-    return b.reviews - a.reviews; // popular
-  });
+  const sortedProducts = products;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

@@ -1,4 +1,4 @@
-import { projects, products, formatPrice, getStatusLabel } from "@/app/lib/mock-data";
+import { formatPrice, getStatusLabel } from "@/app/lib/mock-data";
 import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 import ProductCard from "@/app/components/ProductCard";
@@ -10,11 +10,17 @@ interface ProjectDetailPageProps {
 
 export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { id } = await params;
-  const project = projects.find((p) => p.id === id);
-
-  if (!project) {
-    notFound();
-  }
+  
+  const res = await fetch(`http://localhost:5000/api/projects/${id}`, { cache: "no-store" });
+  if (!res.ok) notFound();
+  
+  const json = await res.json();
+  if (!json.success || !json.data) notFound();
+  
+  const project = json.data;
+  const materials = project.materials || [];
+  
+  const totalMaterials = project.estimatedCost;
 
   const statusVariant =
     project.status === "completado"
@@ -23,19 +29,9 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
       ? "warning"
       : "default";
 
-  const suggestedProducts = products
-    .filter((p) => p.categorySlug === "pisos-ceramicas" || p.categorySlug === "materiales-construccion")
-    .slice(0, 4);
-
-  const materials = [
-    { name: "Porcelanato Mármol Carrara 60x60", quantity: `${project.area + 4} m²`, price: 45900 * (project.area + 4), icon: "🏗️" },
-    { name: "Pegante cerámico flexible 25kg", quantity: `${Math.ceil(project.area / 4)} bultos`, price: 28500 * Math.ceil(project.area / 4), icon: "🧱" },
-    { name: "Boquilla Beige 2kg", quantity: `${Math.ceil(project.area / 8)} kg`, price: 12000 * Math.ceil(project.area / 8), icon: "🪣" },
-    { name: "Crucetas 2mm", quantity: `${Math.ceil(project.area / 15)} bolsas`, price: 8500 * Math.ceil(project.area / 15), icon: "➕" },
-    { name: "Nivel de burbuja 60cm", quantity: "1 unidad", price: 35000, icon: "📏" },
-  ];
-
-  const totalMaterials = materials.reduce((sum, m) => sum + m.price, 0);
+  const suggestedRes = await fetch("http://localhost:5000/api/products?category=pisos-ceramicas&limit=4", { cache: "no-store" });
+  const suggestedJson = await suggestedRes.ok ? await suggestedRes.json() : { data: [] };
+  const suggestedProducts = suggestedJson.data || [];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

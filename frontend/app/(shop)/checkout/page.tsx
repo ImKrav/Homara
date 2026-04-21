@@ -1,21 +1,17 @@
 import Input from "@/app/components/ui/Input";
 import Button from "@/app/components/ui/Button";
 import Card from "@/app/components/ui/Card";
-import { products, formatPrice } from "@/app/lib/mock-data";
+import { formatPrice } from "@/app/lib/mock-data";
 
-const checkoutItems = [
-  { product: products[0], quantity: 4 },
-  { product: products[1], quantity: 1 },
-  { product: products[6], quantity: 3 },
-];
+export default async function CheckoutPage() {
+  const res = await fetch("http://localhost:5000/api/cart", { cache: "no-store" });
+  const json = await res.ok ? await res.json() : { data: { items: [], subtotal: 0, shipping: 0, total: 0 } };
+  const cart = json.data;
 
-export default function CheckoutPage() {
-  const subtotal = checkoutItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
-  const shipping = subtotal > 500000 ? 0 : 25000;
-  const total = subtotal + shipping;
+  const checkoutItems = cart.items || [];
+  const subtotal = cart.subtotal || 0;
+  const shipping = cart.shipping || 0;
+  const total = cart.total || 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

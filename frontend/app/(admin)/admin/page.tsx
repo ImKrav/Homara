@@ -1,13 +1,18 @@
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
-import {
-  adminMetrics,
-  orders,
-  formatPrice,
-  getStatusLabel,
-} from "@/app/lib/mock-data";
+import { formatPrice, getStatusLabel } from "@/app/lib/mock-data";
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const [ordersRes, metricsRes] = await Promise.all([
+    fetch("http://localhost:5000/api/orders?admin=true", { cache: "no-store" }),
+    fetch("http://localhost:5000/api/admin/metrics", { cache: "no-store" })
+  ]);
+  
+  const ordersJson = await ordersRes.ok ? await ordersRes.json() : { data: [] };
+  const metricsJson = await metricsRes.ok ? await metricsRes.json() : { data: [] };
+  
+  const orders = ordersJson.data || [];
+  const adminMetrics = metricsJson.data || [];
   return (
     <div className="p-8">
       <div className="mb-8">

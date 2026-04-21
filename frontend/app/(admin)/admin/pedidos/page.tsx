@@ -1,13 +1,17 @@
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
-import { orders, formatPrice, getStatusLabel } from "@/app/lib/mock-data";
+import { formatPrice, getStatusLabel } from "@/app/lib/mock-data";
 
-export default function AdminPedidosPage() {
+export default async function AdminPedidosPage() {
+  const res = await fetch("http://localhost:5000/api/orders?admin=true", { cache: "no-store" });
+  const json = await res.ok ? await res.json() : { data: [] };
+  const orders = json.data || [];
+
   const orderStats = {
     total: orders.length,
-    pendientes: orders.filter((o) => o.status === "pendiente" || o.status === "procesando").length,
-    enviados: orders.filter((o) => o.status === "enviado").length,
-    entregados: orders.filter((o) => o.status === "entregado").length,
+    pendientes: orders.filter((o: any) => o.status === "pendiente" || o.status === "procesando").length,
+    enviados: orders.filter((o: any) => o.status === "enviado").length,
+    entregados: orders.filter((o: any) => o.status === "entregado").length,
   };
 
   return (

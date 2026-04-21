@@ -1,8 +1,11 @@
 import ProjectCard from "@/app/components/ProjectCard";
 import Button from "@/app/components/ui/Button";
-import { projects } from "@/app/lib/mock-data";
 
-export default function ProyectosPage() {
+export default async function ProyectosPage() {
+  const res = await fetch("http://localhost:5000/api/projects", { cache: "no-store" });
+  const json = await res.ok ? await res.json() : { data: [] };
+  const projects = json.data || [];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Header */}

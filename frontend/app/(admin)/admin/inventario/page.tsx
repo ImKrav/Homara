@@ -1,17 +1,23 @@
 import Card from "@/app/components/ui/Card";
 import Badge from "@/app/components/ui/Badge";
-import { products, formatPrice } from "@/app/lib/mock-data";
+import { formatPrice } from "@/app/lib/mock-data";
 
-export default function AdminInventarioPage() {
+export default async function AdminInventarioPage() {
+  const res = await fetch("http://localhost:5000/api/admin/inventory", { cache: "no-store" });
+  const json = await res.ok ? await res.json() : { data: { products: [], stats: {} } };
+  
+  const products = json.data?.products || [];
+  const stats = json.data?.stats || { totalProducts: 0, totalUnits: 0, lowStockCount: 0, outOfStockCount: 0 };
+  
   const sortedByStock = [...products].sort(
     (a, b) => a.stockQuantity - b.stockQuantity
   );
 
   const lowStock = products.filter(
-    (p) => p.stockQuantity > 0 && p.stockQuantity < 50
+    (p: any) => p.stockQuantity > 0 && p.stockQuantity < 50
   );
-  const outOfStock = products.filter((p) => !p.inStock);
-  const totalUnits = products.reduce((sum, p) => sum + p.stockQuantity, 0);
+  const outOfStock = products.filter((p: any) => !p.inStock);
+  const totalUnits = stats.totalUnits || 0;
 
   return (
     <div className="p-8">

@@ -1,4 +1,4 @@
-import { products, formatPrice } from "@/app/lib/mock-data";
+import { formatPrice } from "@/app/lib/mock-data";
 import Badge from "@/app/components/ui/Badge";
 import Button from "@/app/components/ui/Button";
 import ProductCard from "@/app/components/ProductCard";
@@ -10,15 +10,15 @@ interface ProductDetailPageProps {
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { id } = await params;
-  const product = products.find((p) => p.id === id);
-
-  if (!product) {
-    notFound();
-  }
-
-  const relatedProducts = products
-    .filter((p) => p.categorySlug === product.categorySlug && p.id !== product.id)
-    .slice(0, 4);
+  
+  const res = await fetch(`http://localhost:5000/api/products/${id}`, { cache: "no-store" });
+  if (!res.ok) notFound();
+  
+  const json = await res.json();
+  if (!json.success || !json.data) notFound();
+  
+  const product = json.data;
+  const relatedProducts = product.relatedProducts || [];
 
   const discount = product.originalPrice
     ? Math.round(

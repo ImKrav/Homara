@@ -1,9 +1,13 @@
 import Card from "@/app/components/ui/Card";
 import Button from "@/app/components/ui/Button";
 import Badge from "@/app/components/ui/Badge";
-import { orders, formatPrice, getStatusLabel } from "@/app/lib/mock-data";
+import { formatPrice, getStatusLabel } from "@/app/lib/mock-data";
 
-export default function CuentaPage() {
+export default async function CuentaPage() {
+  const res = await fetch("http://localhost:5000/api/orders", { cache: "no-store" });
+  const json = await res.ok ? await res.json() : { data: [] };
+  const orders = json.data || [];
+
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <h1 className="text-3xl font-bold text-text-primary mb-8">Mi Cuenta</h1>
