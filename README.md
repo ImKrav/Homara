@@ -81,6 +81,14 @@ Si prefieres ejecutar los servicios en tu máquina, sigue estos pasos:
 
    *(Nota: Puedes ejecutar `npm start` para sincronizar, poblar la bd e iniciar en producción).*
 
+5. Opcionalmente, abre **Prisma Studio** para explorar la base de datos visualmente:
+
+   ```bash
+   npx prisma studio
+   ```
+
+   Estará disponible en [http://localhost:5555](http://localhost:5555).
+
 #### Configuración del Frontend
 
 1. En una nueva terminal, ingresa a la carpeta del frontend:
@@ -101,7 +109,6 @@ Si prefieres ejecutar los servicios en tu máquina, sigue estos pasos:
    npm run dev
    ```
 
-
 ---
 
 ### Accesos Universales
@@ -111,5 +118,8 @@ Una vez en ejecución (ya sea por Docker o Local), los servicios estarán dispon
 - **Frontend:** [http://localhost:3000](http://localhost:3000)
 - **Backend API:** [http://localhost:5000](http://localhost:5000)
 - **Documentación API (Swagger):** [http://localhost:5000/api-docs](http://localhost:5000/api-docs)
+- **Prisma Studio (DB UI):** [http://localhost:5555](http://localhost:5555)
+
+> **Prisma Studio** es un cliente visual para explorar y editar directamente los datos de la base de datos. En el entorno Docker se levanta automáticamente dentro del contenedor `homara_backend` junto al servidor Express. En el entorno local se inicia manualmente con `npx prisma studio` desde la carpeta `backend`.
 
 ---
